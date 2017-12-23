@@ -11,13 +11,13 @@ const app       = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
  
-        app.listen(port,  (err) => {
-            if (err) {
-                console.log(err);
-            } else {
-                console.log(`O servidor foi iniciado  http://${host}:${port}`);
-            }
-        });
- 
+app.listen(port, (err) => {
+    if (err) {
+        console.log(err);
+    } else {
+        console.log(`O servidor foi iniciado  http://${host}:${port}`);
+    }
+});
+
 
 
