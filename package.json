@@ -1,0 +1,26 @@
+{
+  "name": "iot-backend-node",
+  "version": "1.0.0",
+  "description": "api to iot + rasppebery + angular4 + ionic3 + electron ",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cassiolpaixao90/iot-backend-node.git"
+  },
+  "keywords": [
+    "iot",
+    "node",
+    "rasppebery",
+    "angular",
+    "ionic"
+  ],
+  "author": "cassio paixao",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cassiolpaixao90/iot-backend-node/issues"
+  },
+  "homepage": "https://github.com/cassiolpaixao90/iot-backend-node#readme"
+}
