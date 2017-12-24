@@ -39,40 +39,46 @@ authenticationRouter.route("/api/user/register")
         try {
             const User = await getUserModel();
 
-            // req.checkBody(registrationSchema);
-            // const errors = req.validationErrors();
+            req.checkBody(registrationSchema);
+            const errors = req.validationErrors();
+            console.log("errors", errors);
 
-            // if (errors) {
-            //     return res.status(500).json(errors);
-            // }
+            if (errors) {
+                return res.status(500).json(errors);
+            }
 
             const {email, password, name} = req.body;
-            console.log("Request body", req.body);
-            // const existingUser = await User.findOne({username: email}).exec();
-            // if (existingUser) {
-            //     return res.status(409).send(`The specified email ${email} address already exists.`);
-            // }
+            console.log("req.body", req.body);
+            const existingUser = await User.findOne({email: email}).exec();
+            if (existingUser) {
+                return res.status(409).send(`The specified email ${email} address already exists.`);
+            }
 
-            // const submittedUser = {
-            //     name:       name,
-            //     email:      email,
-            //     password:   password,
-            //     created:    Date.now()
-            // };
+            console.log(User.setPassword(password));
+            const submittedUser = {
+                name:       name,
+                email:      email,
+                password:   password,
+                created:    Date.now()
+            };
 
-            // const user = new User(submittedUser);
+            console.log("submittedUser", submittedUser);
 
-            // await user.save()
-            //     .then(function (doc) {
-            //         if (doc) {
-            //             console.log(colors.yellow(`Created User ${JSON.stringify(doc)}`));
-            //         }
-            //     })
-            //     .catch(function (err) {
-            //         if (err) {
-            //             console.log(colors.yellow(`Error occurred saving User ${err}`));
-            //         }
-            //     });
+            const user = new User(submittedUser);
+            user.setPassword(password);
+
+
+            await user.save()
+                .then(function (doc) {
+                    if (doc) {
+                        console.log(colors.yellow(`Created User ${JSON.stringify(doc)}`));
+                    }
+                })
+                .catch(function (err) {
+                    if (err) {
+                        console.log(colors.yellow(`Error occurred saving User ${err}`));
+                    }
+                });
 
             res.status(201).json({user: {name: user.name, email: user.email}});
         } catch (err) {

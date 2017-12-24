@@ -1,22 +1,31 @@
 "use strict";
 
-import mongoose         from "mongoose";
-import Promise          from "bluebird";
+import mongoose             from "mongoose";
+import Promise              from "bluebird";
+import uniqueValidator      from "mongoose-unique-validator";
+import crypto               from "crypto";
+import jwt                  from "jsonwebtoken";
+import { secret }           from "../configurations/indexConfig";
 
-const bcrypt    = Promise.promisifyAll(require("bcrypt"));
+
+// const bcrypt    = Promise.promisifyAll(require("bcrypt"));
 const Schema    = mongoose.Schema;
 
 const UserSchema = new Schema({
+   
     name: {
         type:       String,
-        maxLength:  200
+        maxLength:  200,
+        unique:     true,
+        required:   true,
+        match:      /^[a-zA-Z0-9]+$/,
+        index:      true
     },
     email: { 
+        unique:     true,
         type:       String, 
         require:    true,
-        index: {
-            unique: true
-        },
+        index:      true,
         match:      /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i
     },
     role: {
@@ -28,35 +37,52 @@ const UserSchema = new Schema({
         required:   true,
         default:    new Date()
     },
-    password: {
-        type:       String,
-        required:   true,
-        match:      /(?=.*[a-zA-Z])(?=.*[0-9]+).*/,
-        minlength:  6
-    }
+    hash: String,
+    salt: String
 });
 
-UserSchema.pre("save", async (next) => {
-    if (!this.isModified("password")) {
-        return next();
-    }
+// password: {
+//     type:       String,
+//     required:   true,
+//     match:      /(?=.*[a-zA-Z])(?=.*[0-9]+).*/,
+//     minlength:  6
+// },
 
-    try {
-        const hash = await bcrypt.hashAsync(this.password, 6);
-        this.password = hash;
-        next();
-    } catch (err) {
-        next(err);
-    }
-});
+UserSchema.plugin(uniqueValidator, {message: 'is already taken.'});
 
-UserSchema.methods.passwordIsValid =(password) => {
+UserSchema.methods.validPassword = function(password) {
+    var hash = crypto.pbkdf2Sync(password, this.salt, 10000, 512, 'sha512').toString('hex');
+    return this.hash === hash;
+};
+
+UserSchema.methods.setPassword = function(password){
+    this.salt = crypto.randomBytes(16).toString('hex');
+    this.hash = crypto.pbkdf2Sync(password, this.salt, 10000, 512, 'sha512').toString('hex');
+};
+  
+UserSchema.methods.generateJWT = function() {
     try {
-        return bcrypt.compareAsync(password, this.password);
-    }
-    catch (err) {
+        const today     = new Date();
+        const exp       = new Date(today);
+        exp.setDate(today.getDate() + 60);
+  
+        return jwt.sign({
+            id: this._id,
+            name: this.name,
+            exp: parseInt(exp.getTime() / 1000),
+        }, secret);    
+
+    } catch (error) {
         throw err;
     }
-};
+  };
+  
+  UserSchema.methods.toAuthJSON = function(){
+    return {
+      name:     this.name,
+      email:    this.email,
+      token:    this.generateJWT()
+    };
+  };
 
 export {UserSchema as UserSchema};
