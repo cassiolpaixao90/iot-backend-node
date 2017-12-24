@@ -49,7 +49,7 @@ authenticationRouter.route("/api/user/register")
             const {email, password, name} = req.body;
             const existingUser = await User.findOne({email: email}).exec();
             if (existingUser) {
-                return res.status(409).send(`The specified email ${email} address already exists.`);
+                return res.status(409).json({ status:409, msg:`The specified email ${email} address already exists.`});
             }
 
             const submittedUser = {
@@ -74,43 +74,41 @@ authenticationRouter.route("/api/user/register")
                     }
                 });
 
-            res.status(201).json({user: {name: user.name, email: user.email}});
+            res.status(201).json({user: {name: user.name, email: user.email}, status: 201, msg:"success"});
         } catch (err) {
-            res.status(500).send(err);
+            res.status(500).send({ status:500, msg: err});
         }
     });
 
 
 authenticationRouter.route("/api/user/login")
-    .post(async (req, res) => {
+    .post(authenticationConfig.optional,async (req, res, next) => {
         try {
             const User = await getUserModel();
             const {email, password} = req.body;
+            console.log(req.body);
 
             req.checkBody(loginSchema);
             const errors = req.validationErrors();
-
-            const existingUser = await User.findOne({username: email}).exec();
-            if (!errors && existingUser && await existingUser.passwordIsValid(password)) {
-                const userInfo = {
-                    id:             existingUser._id,
-                    name:           existingUser.name,
-                    email:          existingUser.email,
-                    roles:          existingUser.roles
-                };
-
-                req.session.login({email: existingUser.email}, (err) => {
-                    if (err) {
-                        return res.status(500).send("There was an error logging in. Please try again later.");
-                    }
-                });
-
-                res.status(200).json(userInfo);
-            } else {
-                res.status(401).send("Invalid username or password");
+            if (errors) {
+                return res.status(500).json(errors);
             }
+
+            passport.authenticate('local', {session: false}, (err, user, info) =>{
+                if(err){ 
+                    return next(err);
+                }
+            
+                if(user){
+                  user.token = user.generateJWT();
+                  return res.json({user: user.toAuthJSON()});
+                } else {
+                  return res.status(422).json(info);
+                }
+              })(req, res, next);
         }
         catch (err) {
+            console.log(err);
             res.status(500).send("There was an error attempting to login. Please try again later.");
         }
     });

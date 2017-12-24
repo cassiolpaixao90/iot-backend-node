@@ -7,7 +7,7 @@
 /* eslint-disable no-console */
 
 import jwt               from "express-jwt";
-import {secret}          from "./indexConfig";
+import {secret}          from "../settings/index";
 
 function getTokenFromHeader(req){
   if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Token' ||

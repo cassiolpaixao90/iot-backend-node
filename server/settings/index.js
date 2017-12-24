@@ -10,3 +10,7 @@ export const serverSettings = {
         secret: "1652f8dfa00443589e12afb7ec37f2c5"
     }
 };
+
+export const secret = {
+    secret: process.env.NODE_ENV === 'production' ? process.env.SECRET : "secret"
+};

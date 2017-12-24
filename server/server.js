@@ -18,7 +18,7 @@ app.use(expressValidator());
 app.use(bodyParser.json());
 
 apiRouteConfig(app);
-
+require('./configurations/passportConfig');
 app.listen(port, (err) => {
     if (err) {
         console.log(err);
