@@ -8,7 +8,7 @@ export default function sessionManagementConfig(app) {
 
     session.Session.prototype.login = function (user, cb) {
         const req = this.req;
-        req.session.regenerate((err) =>{
+        req.session.regenerate((err) => {
             if (err){
                 cb(err);
             }
