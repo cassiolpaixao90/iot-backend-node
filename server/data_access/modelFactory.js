@@ -1,8 +1,8 @@
 "use strict";
 
-import { UserSchema }                                            from "./schemas";
-import connectionProvider                                        from "./connectionProvider";
-import {serverSettings}                                          from "../settings";
+import { UserSchema }                           from "./schemas";
+import connectionProvider                       from "./connectionProvider";
+import { serverSettings }                       from "../settings";
 
 export const getUserModel = async function () {
     try {

@@ -7,6 +7,6 @@ export const serverSettings = {
         password: "bfdf8aba8e784557af145db15f8703c1"
     },
     session: {
-        password: "1652f8dfa00443589e12afb7ec37f2c5"
+        secret: "1652f8dfa00443589e12afb7ec37f2c5"
     }
 };
