@@ -9,17 +9,14 @@ import { secret }           from "../configurations/indexConfig";
 
 
 // const bcrypt    = Promise.promisifyAll(require("bcrypt"));
-const Schema    = mongoose.Schema;
-
+const Schema     = mongoose.Schema;
 const UserSchema = new Schema({
    
     name: {
         type:       String,
         maxLength:  200,
-        unique:     true,
         required:   true,
-        match:      /^[a-zA-Z0-9]+$/,
-        index:      true
+        match:      /^[a-zA-Z0-9]+$/
     },
     email: { 
         unique:     true,

@@ -41,20 +41,17 @@ authenticationRouter.route("/api/user/register")
 
             req.checkBody(registrationSchema);
             const errors = req.validationErrors();
-            console.log("errors", errors);
 
             if (errors) {
                 return res.status(500).json(errors);
             }
 
             const {email, password, name} = req.body;
-            console.log("req.body", req.body);
             const existingUser = await User.findOne({email: email}).exec();
             if (existingUser) {
                 return res.status(409).send(`The specified email ${email} address already exists.`);
             }
 
-            console.log(User.setPassword(password));
             const submittedUser = {
                 name:       name,
                 email:      email,
@@ -62,11 +59,8 @@ authenticationRouter.route("/api/user/register")
                 created:    Date.now()
             };
 
-            console.log("submittedUser", submittedUser);
-
             const user = new User(submittedUser);
             user.setPassword(password);
-
 
             await user.save()
                 .then(function (doc) {
