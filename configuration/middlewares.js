@@ -23,7 +23,7 @@ module.exports = () =>{
 
   consign()
    .include('controllers')
-   .then('persistencia')
+   .then('persistence')
    .into(app);
 
   return app;

@@ -7,7 +7,7 @@ export const registrationSchema = {
             errorMessage: "Invalid Email"
         }
     },
-    "password": {
+    "senha": {
         notEmpty: true,
         isLength: {
             options: [{min: 6}],
@@ -19,7 +19,7 @@ export const registrationSchema = {
         },
         errorMessage: "Invalid password"
     },
-    "name": {
+    "nome_cliente": {
         notEmpty: false,
         isLength: {
             options: [{max: 200}],
