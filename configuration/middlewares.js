@@ -16,13 +16,15 @@ module.exports = () =>{
     }
   }));
 
+  app.set('secret', 'éobixao');
   app.use(bodyParser.urlencoded({extended: true}));
   app.use(bodyParser.json());
 
   app.use(expressValidator());
 
   consign()
-   .include('controllers')
+    .include('controllers/users.js')
+   .then('controllers')
    .then('persistence')
    .into(app);
 
