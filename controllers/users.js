@@ -1,6 +1,8 @@
+'use strict';
+
 import {registrationSchema, loginSchema}        from "../validations/validationUserSchemas";
 import colors                                   from "colors";
-import util                                     from "../util/utils";
+import crypto                                   from "crypto";
 
 module.exports = app => {
 
@@ -72,9 +74,16 @@ module.exports = app => {
 
         } else {
 
-          const ret       = util.newPassword(user.senha);
-          user.senha      = ret.passwordHash;
-          user.salt       = ret.salt;
+          const salt      = Math.round((Date.now() * Math.random())) + '';
+          console.log("salt", salt);
+
+          const newHash   =  crypto.createHash('sha512')
+                                   .update(salt + user.senha, 'utf8')
+                                   .digest('hex');
+
+          console.log("newHash", newHash);
+          user.senha      = newHash;
+          user.salt       = salt;
           user.updated_at = new Date();
           user.created_at = new Date();
           userDao.save(user, (erro, resultado) => {
@@ -97,9 +106,38 @@ module.exports = app => {
   });
 
 
+  app.post("/api/user/login", async(req, res) => {
 
+    try {
 
+      const {instalacao, senha} = req.body;
+      let user = {
+        instalacao  :   instalacao,
+        senha       :   senha,
+      };
 
+      const connection = app.persistence.connectionFactory();
+      const userDao = new app.persistence.UserDao(connection);
 
+      userDao.getByInstalacao( user.instalacao, (erro, resultado) =>{
+
+        if (resultado.length > 0) {
+          const newHash   =  crypto.createHash('sha512')
+                                   .update(resultado[0].salt + user.senha, 'utf8')
+                                   .digest('hex');
+
+          if( newHash === resultado[0].senha ){
+            return res.status(201).json({ status:201, message: "logado com sucesso"});
+          }
+          else {
+            return res.status(500).json({ status:501, message: "Instalação / senha inválidos! "});
+          }
+        }
+      });
+
+    } catch (error) {
+      console.log(colors.red(error));
+    }
+  });
 
 };
