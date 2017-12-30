@@ -75,7 +75,7 @@ module.exports = app => {
 
           let salt        = Math.round((Date.now() * Math.random())) + '';
           let newHash     = crypto.createHash('sha512')
-                                   .update(salt + password, 'utf8')
+                                   .update(salt + senha, 'utf8')
                                    .digest('hex');
           user.senha      = newHash;
           user.salt       = salt;

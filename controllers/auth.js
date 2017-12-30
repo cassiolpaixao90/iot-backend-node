@@ -48,9 +48,7 @@ module.exports = app => {
               });
 
               console.log('Autenticado: token adicionado na resposta', token);
-              res.set('x-access-token', token);
-              res.end();
-              // return res.status(201).json({ status:201, message: "logado com sucesso"});
+              res.json(token);
             }
             else {
               return res.status(500).json({ status:501, message: "Instalação / senha inválidos! "});
@@ -67,7 +65,9 @@ module.exports = app => {
     app.use("/*", (req, res, next) =>{
       
       try {
-        const token = req.headers['x-access-token'];
+        let authorizationHeader = req.headers.authorization;
+	      let token = authorizationHeader ? authorizationHeader.split(/(\s+)/)[2] : '';
+       
         if (token) {
           console.log('Token recebido, decodificando');
           jwt.verify(token, app.get('secret'), (err, decoded) =>{

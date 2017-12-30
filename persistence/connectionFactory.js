@@ -1,4 +1,4 @@
-var mysql  = require('mysql');
+import mysql  			 from "mysql";
 
 function createDBConnection(){
 		return mysql.createConnection({
