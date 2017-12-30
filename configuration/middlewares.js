@@ -6,7 +6,9 @@ import morgan                        from "morgan";
 import logger                        from "../logger/logger.js";
 
 module.exports = () =>{
-  var app = express();
+  let app         = express();
+  const http      = require("http").Server(app);
+  const io        = require('socket.io')(http);
 
   app.use(morgan("common", {
     stream: {
@@ -16,17 +18,19 @@ module.exports = () =>{
     }
   }));
 
+  app.set("io", io);
   app.set('secret', 'éobixao');
   app.use(bodyParser.urlencoded({extended: true}));
   app.use(bodyParser.json());
-
   app.use(expressValidator());
 
-  consign()
-    .include('controllers/users.js')
-   .then('controllers')
-   .then('persistence')
-   .into(app);
+  require("./socketio")(app);
 
-  return app;
+  consign()
+    .include('controllers/auth.js')
+    .then('controllers')
+    .then('persistence')
+    .into(app);
+
+  return http;
 }

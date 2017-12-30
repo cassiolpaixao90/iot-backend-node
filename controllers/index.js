@@ -2,7 +2,7 @@
 module.exports = app => {
 
     app.get('/api/status/ping', function (req, res) {
-        res.send('pong')
+        res.send('ping')
     });
 
     app.get('/api/status/info', function (req, res) {
