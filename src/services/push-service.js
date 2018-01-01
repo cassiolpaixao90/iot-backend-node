@@ -54,12 +54,16 @@ exports.removeConnection = function(socket) {
  * @param message message.
  */
 exports.pushMessage = function(userId, message) {
-	let userConnections = connections[userId];
+	let userConnections = {};
+	let connections = {};
+	userConnections = connections[userId];
+	console.log("userConnections", userConnections)
 	if (userConnections) {
 		for (let connectionId in  userConnections) {
 			if (userConnections.hasOwnProperty(connectionId)) {
 				let socket = userConnections[connectionId];
 				if (socket != null) {
+					console.log("message", message);
 					socket.emit('message', message);
 				}
 			}

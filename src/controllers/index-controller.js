@@ -8,3 +8,16 @@ exports.get  = (req, res, next) => {
     });
     console.log(colors.yellow("router index"));
 };
+
+exports.ping = (req, res) => {
+	res.send('ping')
+};
+
+exports.status = (req, res) => {
+	res.setHeader('Content-Type', 'application/json');
+	var info = {
+		'name': "iot-sensor",
+		'version': "v.0.0.1"
+	};
+	res.send(info)
+};
