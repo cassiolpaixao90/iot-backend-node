@@ -16,5 +16,5 @@ if (cluster.isMaster) {
     // Garante que um novo cluster inicie se um antigo morrer
   });
 } else {
-  require("./index.js");
+  require("../bin/server.js");
 }

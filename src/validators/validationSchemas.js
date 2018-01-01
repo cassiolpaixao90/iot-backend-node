@@ -7,7 +7,7 @@ export const registrationSchema = {
             errorMessage: "Invalid Email"
         }
     },
-    "senha": {
+    "password": {
         notEmpty: true,
         isLength: {
             options: [{min: 6}],
@@ -19,15 +19,15 @@ export const registrationSchema = {
         },
         errorMessage: "Invalid password"
     },
-    "nome_cliente": {
+    "name": {
         notEmpty: false,
         isLength: {
             options: [{max: 200}],
-            errorMessage: "The last name must be under 200 characters"
+            errorMessage: "The first name must be under 200 characters"
         },
         matches: {
             options: ["^[a-z ,.'-]+$", "i"],
-            errorMessage: "The last name can only contain letters and the characters (,.'-)"
+            errorMessage: "The first name can only contain letters and the characters (,.'-)"
         }
     }
 };

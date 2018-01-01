@@ -1,5 +1,5 @@
-import winston          from "winston";
-import fs               from "fs";
+import winston                      from "winston";
+import fs                           from "fs";
 
 if(!fs.existsSync('logs')){
   fs.mkdirSync('logs');
