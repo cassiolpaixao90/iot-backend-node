@@ -60,7 +60,7 @@ exports.authenticate =  async (data) => {
         const User         = await getUserModel();
         const existingUser = await repository.getByEmail(data.email, User);
         if(!existingUser){
-            return false;
+            throw new IotError(`Usuario ${data.email} não cadastrado!`, 409);
         }
         
         const descrypt = descrypPassword(existingUser, data.password) ;
@@ -90,7 +90,7 @@ exports.refreshToken = async(token) => {
         const user         = await repository.getById(data.id, User);
 
         if (!user) {
-            return false;
+            throw new IotError("Token não encontrado!", 404);
         }
 
         return await generateToken({
@@ -100,7 +100,7 @@ exports.refreshToken = async(token) => {
             roles: user.roles
         });
     } catch (e) {
-        return "Failed to process your request";
+        throw new IotError(e.message, e.status);
     }
 };
 
@@ -108,11 +108,11 @@ exports.authorize = function (req, res, next) {
     
     const token = req.body.token || req.query.token || req.headers['x-access-token'];
     if (!token) {
-        res.status(401).json({ message: 'Access Restrict'  });
+        throw new IotError("Acesso não permitido!", 404);
     } else {
         jwt.verify(token, global.SALT_KEY, (error, decoded) => {
             if (error) {
-                res.status(401).json({ message: 'Token Inválid' });
+                throw new IotError("Token invalido!", 401);
             } else {
                 next();
             }

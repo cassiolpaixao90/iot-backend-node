@@ -55,11 +55,8 @@ exports.refreshToken = async(req, res, next) => {
 
         const token = req.body.token || req.query.token || req.headers['x-access-token'];
         const data = await userService.refreshToken(token);
-        if (!dat) {
-            return res.status(404).send({ message: 'Not found!'  });
-        }
         res.status(201).send({ token: data });
     } catch (e) {
-        res.status(500).send({ message: 'Falha ao processar sua requisição' });
+        res.status(e.status).json({ message: e.message});
     }
 };
