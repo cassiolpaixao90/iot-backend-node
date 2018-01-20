@@ -2,6 +2,7 @@
 
 import {registrationSchema, loginSchema}        from "../validators/validationSchemas";
 import userService                              from "../services/user-service";
+import IotError                                 from "../exception/iot-exception";
 
 exports.post = async(req, res, next) => {
 
@@ -10,7 +11,7 @@ exports.post = async(req, res, next) => {
         req.checkBody(registrationSchema);
         const errors = req.validationErrors();
         if (errors) {
-            return res.status(500).json(errors);
+            throw new IotError(errors, 500);
         }
         const {email, password, name} = req.body;
         const data = {
@@ -20,14 +21,11 @@ exports.post = async(req, res, next) => {
             roles      :  ["user"]
         };
 
-        const existingUser = await userService.save(data);
-        if(existingUser){
-            return res.status(409).json({ message: 'msg:`The specified email ${email} address already exists.`'});
-        }
+        await userService.save(data);
         res.status(201).send({ message: 'registered successfully!' });
 
     } catch (e) {
-        res.status(500).send({ message: 'Failed to process your request' });
+        res.status(e.status).json({ message: e.message});
     }
 };
 
@@ -36,7 +34,7 @@ exports.authenticate = async(req, res, next) => {
         req.checkBody(loginSchema);
         const errors = req.validationErrors();
         if (errors) {
-            return res.status(500).json(errors);
+            throw new IotError(errors, 500);
         }
 
         const { email, password } = req.body;
@@ -46,17 +44,9 @@ exports.authenticate = async(req, res, next) => {
         };
 
         const user = await userService.authenticate(data);
-        if(!user){
-            return res.status(404).send({message: 'Usuário ou senha inválidos'});
-        }
-
-        res.status(201).send({
-            token: user
-        });
+        res.status(201).send({ token: user });
     } catch (e) {
-        res.status(500).send({
-            message: 'Falha ao processar sua requisição'
-        });
+        res.status(e.status).json({ message: e.message});
     }
 };
 

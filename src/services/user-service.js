@@ -2,6 +2,7 @@ import {getUserModel}       from "../data_access/modelFactory";
 import repository           from "../repositories/user-repository";
 import jwt                  from "jsonwebtoken";
 import crypto               from 'crypto';
+import IotError             from '../exception/iot-exception';
 
 const generateToken = async (data) => {
     return jwt.sign(data, global.SALT_KEY, { expiresIn: '1d' });
@@ -40,7 +41,7 @@ exports.save = async (data) => {
         const existingUser   = await repository.getByEmail(data.email, User);
 
         if (existingUser) {
-            return true;
+            throw new IotError(`The specified email ${data.email} address already exists.`, 409);
         }
 
         const newPassword = cryptoPassword(data.password);
@@ -49,7 +50,7 @@ exports.save = async (data) => {
         await repository.create(data, User);
     }
     catch(e){
-        return "Failed to process your request";
+        throw new IotError(e.message, e.status);
     }
 };
 
@@ -65,7 +66,7 @@ exports.authenticate =  async (data) => {
         const descrypt = descrypPassword(existingUser, data.password) ;
         const ret = descrypt.newHash === existingUser.password;
         if(!ret){
-          return false;
+          throw new IotError("Usuário ou senha inválidos",404);
         }
 
         return await generateToken({
@@ -76,7 +77,7 @@ exports.authenticate =  async (data) => {
         });
 
     } catch (e) {
-        return "Failed to process your request";
+        throw new IotError(e.message, e.status);
     }
 
 };
