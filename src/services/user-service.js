@@ -108,11 +108,11 @@ exports.authorize = function (req, res, next) {
     
     const token = req.body.token || req.query.token || req.headers['x-access-token'];
     if (!token) {
-        throw new IotError("Acesso não permitido!", 404);
+        res.status(401).json({ message: 'Acesso não permitido!'});
     } else {
         jwt.verify(token, global.SALT_KEY, (error, decoded) => {
             if (error) {
-                throw new IotError("Token invalido!", 401);
+                res.status(401).json({ message: 'Token invalido!' });
             } else {
                 next();
             }
