@@ -3,6 +3,7 @@ import repository           from "../repositories/user-repository";
 import jwt                  from "jsonwebtoken";
 import crypto               from 'crypto';
 import IotError             from '../exception/iot-exception';
+import mail                 from '../configuration/nodeMailer';
 
 const generateToken = async (data) => {
     return jwt.sign(data, global.SALT_KEY, { expiresIn: '1d' });
@@ -36,6 +37,20 @@ const descrypPassword = (user, password) => {
 const tokenPassword = () => {
   const token = crypto.randomBytes(64).toString('hex');
   return token;
+};
+
+const sendMail = (email) => {
+  mailOptions.from;
+  mailOptions.to = email;
+  mailOptions.subject;
+  mailOptions.html;
+
+  transporter.sendMail(mailOptions, function (err, info) {
+    if(err)
+      console.log(err)
+    else
+      console.log(info);
+ });
 };
 
 exports.save = async (data) => {
@@ -139,6 +154,14 @@ exports.forgotPassword = async (data) => {
       user.resetPasswordToken = tokenPassword();
       user.resetPasswordExpires = Date.now() + 3600000; // expira em 1 hora
       await repository.create(data, User);
+      // sendMail(data.email);
+      const resetURL = `http://${req.headers.host}/account/reset/${user.resetPasswordToken}`;
+      await mail.send({
+        user,
+        filename: 'password-reset',
+        subject: 'Password Reset',
+        resetURL
+      });
   }
   catch(e){
       throw new IotError(e.message, e.status);
