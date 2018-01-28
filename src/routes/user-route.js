@@ -8,6 +8,7 @@ import userService                        from "../services/user-service";
 const userRouter =  Router();
 
 userRouter.post('/', controller.post);
+userRouter.post('/forgot-password', controller.forgotPassword);
 userRouter.post('/authenticate', controller.authenticate);
 userRouter.post('/refresh-token', userService.authorize, controller.refreshToken);
 

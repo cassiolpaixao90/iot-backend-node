@@ -60,3 +60,24 @@ exports.refreshToken = async(req, res, next) => {
         res.status(e.status).json({ message: e.message});
     }
 };
+
+exports.forgotPassword = async( req, res) => {
+
+  try {
+    req.checkBody(loginSchema);
+    const errors = req.validationErrors();
+    if (errors) {
+        throw new IotError(errors, 500);
+    }
+
+    const { email } = req.body;
+    const data = {
+        email: email
+    };
+
+    await userService.forgotPassword(data);
+  } catch (e) {
+    res.status(e.status).json({ message: e.message});
+  }
+
+};

@@ -30,13 +30,13 @@ const descrypPassword = (user, password) => {
                                      .digest('hex');
     return {
         newHash: newHash
-    }                                     
+    }
 }
 
 exports.save = async (data) => {
 
     try {
-        
+
         const User           = await getUserModel();
         const existingUser   = await repository.getByEmail(data.email, User);
 
@@ -62,7 +62,7 @@ exports.authenticate =  async (data) => {
         if(!existingUser){
             throw new IotError(`Usuario ${data.email} não cadastrado!`, 409);
         }
-        
+
         const descrypt = descrypPassword(existingUser, data.password) ;
         const ret = descrypt.newHash === existingUser.password;
         if(!ret){
@@ -105,7 +105,7 @@ exports.refreshToken = async(token) => {
 };
 
 exports.authorize = function (req, res, next) {
-    
+
     const token = req.body.token || req.query.token || req.headers['x-access-token'];
     if (!token) {
         res.status(401).json({ message: 'Acesso não permitido!'});
@@ -118,5 +118,23 @@ exports.authorize = function (req, res, next) {
             }
         });
     }
+};
+
+
+exports.forgotPassword = async (data) => {
+
+  try {
+
+      const User           = await getUserModel();
+      const existingUser   = await repository.getByEmail(data.email, User);
+      if (!existingUser) {
+          throw new IotError(`The specified email ${data.email} address not exists.`, 409);
+      }
+
+      await repository.create(data, User);
+  }
+  catch(e){
+      throw new IotError(e.message, e.status);
+  }
 };
 

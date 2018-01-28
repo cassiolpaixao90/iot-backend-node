@@ -9,7 +9,7 @@ const _internalConnectionPool = {};
 
 export default function (url, database, options) {
     const opts = Object.assign({}, {
-        server: {poolSize: 5}
+        server: {poolSize: 1}
     }, options);
 
     return new Promise(function(resolve, reject){
