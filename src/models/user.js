@@ -29,12 +29,20 @@ const UserSchema = new Schema({
     },
     update_at: {
         type:       Date,
-        required:   true,
-        default:    new Date()
+        required:   true
     },
     password: String,
-    salt: String
-    
+    salt: String,
+    resetPasswordToken : {
+      type:       String,
+      require:    true,
+    },
+    resetPasswordExpires : {
+        required : true,
+        type: Date
+    }
+
+
 });
 
 

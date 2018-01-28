@@ -33,6 +33,11 @@ const descrypPassword = (user, password) => {
     }
 }
 
+const tokenPassword = () => {
+  const token = crypto.randomBytes(64).toString('hex');
+  return token;
+};
+
 exports.save = async (data) => {
 
     try {
@@ -130,7 +135,9 @@ exports.forgotPassword = async (data) => {
       if (!existingUser) {
           throw new IotError(`The specified email ${data.email} address not exists.`, 409);
       }
-
+      user.update_at = Date.now();
+      user.resetPasswordToken = tokenPassword();
+      user.resetPasswordExpires = Date.now() + 3600000; // expira em 1 hora
       await repository.create(data, User);
   }
   catch(e){
